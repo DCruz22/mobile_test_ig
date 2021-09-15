@@ -19,7 +19,7 @@ object RetrofigConfig {
         return OkHttpClient().newBuilder().build()
     }
 
-    fun provideBIApi(retrofit: Retrofit): KoombeaAPI {
+    fun provideKoombeaApi(retrofit: Retrofit): KoombeaAPI {
         return retrofit.create(KoombeaAPI::class.java)
     }
 
