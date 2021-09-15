@@ -2,11 +2,13 @@ package com.example.koombea_ig.data.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 
 @Entity
 data class User(
     @PrimaryKey
-    val id: Int = 0,
+    @SerializedName("uid")
+    val id: String = "",
     var name: String = "",
     var email: String = "",
     var profilePic: String = "",
