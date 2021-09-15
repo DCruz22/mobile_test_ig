@@ -2,15 +2,24 @@ package com.example.koombea_ig.data.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.gson.annotations.SerializedName
+import com.example.koombea_ig.data.network.response.ProfileData
 
-@Entity
+@Entity(tableName = "user")
 data class User(
-    @PrimaryKey
-    @SerializedName("uid")
-    val id: String = "",
+    @PrimaryKey(autoGenerate = false)
+    var id: String = "",
     var name: String = "",
     var email: String = "",
-    var profilePic: String = "",
-    var posts: List<Post> = emptyList()
-)
+    var profilePic: String = ""
+){
+    protected fun parseUserPost(profileData: ProfileData): User{
+        return profileData.let {
+            User(
+                id,
+                name,
+                email,
+                profilePic
+            )
+        }
+    }
+}

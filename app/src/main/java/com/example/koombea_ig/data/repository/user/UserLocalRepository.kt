@@ -14,17 +14,23 @@ class UserLocalRepository(private val applicationContext: Context): IUserLocalRe
 
     override suspend fun insertUser(user: User) {
         koombeaDatabase()!!.withTransaction {
-            koombeaDatabase()!!.userPostDao().insertUser(user)
+            koombeaDatabase()!!.userDao().insertUser(user)
         }
     }
 
     override suspend fun deleteUser(user: User) {
         koombeaDatabase()!!.withTransaction {
-            koombeaDatabase()!!.userPostDao().deleteUser(user)
+            koombeaDatabase()!!.userDao().deleteUser(user)
         }
     }
 
     override fun getAllUsers(): LiveData<List<User>> {
-        return koombeaDatabase()!!.userPostDao().getAllUsers()
+        return koombeaDatabase()!!.userDao().getAllUsers()
+    }
+
+    override suspend fun deleteAll() {
+        koombeaDatabase()!!.withTransaction {
+            koombeaDatabase()!!.userDao().deleteAll()
+        }
     }
 }

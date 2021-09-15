@@ -5,15 +5,17 @@ import androidx.room.*
 import com.example.koombea_ig.data.models.User
 
 @Dao
-interface UserPostDao {
+interface UserDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertUser(user: User)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertUser(user: User?)
 
     @Delete
-    suspend fun deleteUser(user: User)
+    fun deleteUser(user: User)
 
     @Query("Select * from user")
     fun getAllUsers(): LiveData<List<User>>
 
+    @Query("DELETE FROM user")
+    fun deleteAll()
 }

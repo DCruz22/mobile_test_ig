@@ -1,8 +1,6 @@
 package com.example.koombea_ig.data.repository.user
 
 import androidx.lifecycle.LiveData
-import androidx.room.Delete
-import androidx.room.Query
 import com.example.koombea_ig.data.models.User
 
 interface IUserLocalRepository {
@@ -13,4 +11,5 @@ interface IUserLocalRepository {
 
     fun getAllUsers(): LiveData<List<User>>
 
+    suspend fun deleteAll()
 }

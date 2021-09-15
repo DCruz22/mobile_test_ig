@@ -3,8 +3,11 @@ package com.example.koombea_ig.worker
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.example.koombea_ig.data.models.Picture
+import com.example.koombea_ig.data.repository.IRemoteRepository
+import com.example.koombea_ig.data.repository.picture.IPictureLocalRepository
+import com.example.koombea_ig.data.repository.post.IPostLocalRepository
 import com.example.koombea_ig.data.repository.user.IUserLocalRepository
-import com.example.koombea_ig.data.repository.user.IUserRemoteRepository
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
@@ -12,19 +15,29 @@ class DownloadWorker(appContext: Context, workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams), KoinComponent {
 
     private val TAG = this::class.java.simpleName
-    private val userRemoteRepository: IUserRemoteRepository by inject()
+    private val remoteRepository: IRemoteRepository by inject()
     private val userLocalRepository: IUserLocalRepository by inject()
+    private val postLocalRepository: IPostLocalRepository by inject()
+    private val pictureLocalRepository: IPictureLocalRepository by inject()
 
     private var runAttempt: Int = 0
     private val MAX_RETRY: Int = 1
 
     override suspend fun doWork(): Result {
         kotlin.runCatching {
-            userRemoteRepository.getAllUsersPosts()
+            remoteRepository.getRemoteData()
         }.onSuccess{ response ->
 
-            response.data.forEach { user ->
-                userLocalRepository.insertUser(user)
+            response.data.forEach { profileData ->
+                userLocalRepository.insertUser(profileData.toUser())
+
+                profileData.posts.forEach { post ->
+                    postLocalRepository.insertPost(post.toPost(profileData.id))
+
+                    post.pictures.forEach{ picture ->
+                        pictureLocalRepository.insertPicture(Picture(picUrl = picture, postId = post.id))
+                    }
+                }
             }
 
             return Result.success()
