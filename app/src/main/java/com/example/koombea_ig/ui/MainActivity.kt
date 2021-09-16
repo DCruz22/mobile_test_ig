@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupAdapter(){
         val manager = LinearLayoutManager(this)
-        userAdapter = UserAdapter()
+        userAdapter = UserAdapter(this)
 
         viewBinding.mainRv.layoutManager = manager
         viewBinding.mainRv.adapter = userAdapter
@@ -36,9 +36,40 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupObservers(){
 
-        mainViewModel.userList.observe(this, Observer {
-            it?.let { users ->
-                userAdapter.setItems(users.toMutableList())
+//        mainViewModel.userList.observe(this, Observer {
+//            it?.let { users ->
+//                if (users.isNotEmpty()){
+//                    mainViewModel.populateProfileData()
+//                }
+//            }
+//        })
+//
+//        mainViewModel.pictureList.observe(this, Observer {
+//            it?.let { pictures ->
+//                if (pictures.isNotEmpty()){
+//                    mainViewModel.populateProfileData()
+//                }
+//            }
+//        })
+//
+//        mainViewModel.postList.observe(this, Observer {
+//            it?.let { posts ->
+//                if (posts.isNotEmpty()){
+//                    mainViewModel.populateProfileData()
+//                }
+//            }
+//        })
+
+        mainViewModel.results.observe(this, Observer {
+            if (it){
+                mainViewModel.populateProfileData()
+            }
+        })
+
+        mainViewModel.profileData.observe(this, Observer {
+            it?.let { profiles ->
+
+                userAdapter.setItems(profiles.toMutableList())
                 viewBinding.mainRv.visibility = View.VISIBLE
                 viewBinding.mainPb.visibility = View.GONE
             }

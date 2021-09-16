@@ -32,7 +32,8 @@ class DownloadWorker(appContext: Context, workerParams: WorkerParameters) :
                 userLocalRepository.insertUser(profileData.toUser())
 
                 profileData.posts.forEach { post ->
-                    postLocalRepository.insertPost(post.toPost(profileData.id))
+                    val localPost = post.toPost(profileData.id)
+                    postLocalRepository.insertPost(localPost)
 
                     post.pictures.forEach{ picture ->
                         pictureLocalRepository.insertPicture(Picture(picUrl = picture, postId = post.id))

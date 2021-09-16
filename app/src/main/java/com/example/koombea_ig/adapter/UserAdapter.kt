@@ -1,15 +1,17 @@
 package com.example.koombea_ig.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.koombea_ig.data.models.User
+import com.example.koombea_ig.data.network.response.ProfileData
 import com.example.koombea_ig.databinding.UserItemBinding
 
-class UserAdapter() : RecyclerView.Adapter<UserAdapter.ViewHolder>() {
+class UserAdapter(private val context: Context) : RecyclerView.Adapter<UserAdapter.ViewHolder>() {
 
-    private var userList = mutableListOf<User>()
+    private var profileList = mutableListOf<ProfileData>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = UserItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -18,28 +20,34 @@ class UserAdapter() : RecyclerView.Adapter<UserAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val user = userList[position]
-        holder.bindItem(user)
+        val profile = profileList[position]
+        holder.bindItem(profile)
     }
 
-    fun setItems(items: MutableList<User>) {
-        this.userList = items
+    fun setItems(items: MutableList<ProfileData>) {
+        this.profileList = items
         notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {
-        return userList.size
+        return profileList.size
     }
 
-    class ViewHolder(private val binding: UserItemBinding): RecyclerView.ViewHolder(binding.root){
+    class ViewHolder(val binding: UserItemBinding): RecyclerView.ViewHolder(binding.root){
 
-        fun bindItem(user: User){
-            binding.nameTv.text = user.name
-            binding.emailTv.text = user.email
+        fun bindItem(profileData: ProfileData){
+            binding.nameTv.text = profileData.name
+            binding.emailTv.text = profileData.email
             Glide.with(binding.root)
-                .load(user.profilePic)
+                .load(profileData.profilePic)
                 .circleCrop()
                 .into(binding.profilePicIv)
+
+            val layoutManager = LinearLayoutManager(binding.postLayoutRv.context)
+            val postAdapter = PostAdapter(binding.postLayoutRv.context)
+            binding.postLayoutRv.layoutManager = layoutManager
+            binding.postLayoutRv.adapter = postAdapter
+            postAdapter.setItems(profileData.posts.toMutableList())
 
         }
     }
