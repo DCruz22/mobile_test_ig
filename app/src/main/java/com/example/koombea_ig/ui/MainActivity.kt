@@ -1,17 +1,28 @@
 package com.example.koombea_ig.ui
 
+import android.content.DialogInterface
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.View
+import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.koombea_ig.R
+import com.example.koombea_ig.adapter.PostAdapter
 import com.example.koombea_ig.adapter.UserAdapter
 import com.example.koombea_ig.databinding.ActivityMainBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.bumptech.glide.Glide
+import com.example.koombea_ig.utils.NetworkUtil
+import com.example.koombea_ig.worker.WorkerController
+import kotlinx.coroutines.runBlocking
 
-class MainActivity : AppCompatActivity() {
+
+class MainActivity : AppCompatActivity(), PostAdapter.PictureItemListener {
 
     private val mainViewModel: MainViewModel by viewModel()
     private lateinit var userAdapter: UserAdapter
@@ -22,43 +33,33 @@ class MainActivity : AppCompatActivity() {
         viewBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         viewBinding.mainPb.visibility = View.VISIBLE
 
+        viewBinding.pullToRefresh.setOnRefreshListener {
+            WorkerController.startDownloadWorker(applicationContext)
+            viewBinding.pullToRefresh.isRefreshing = false
+        }
+
         setupAdapter()
         setupObservers()
     }
 
     private fun setupAdapter(){
         val manager = LinearLayoutManager(this)
-        userAdapter = UserAdapter(this)
+        userAdapter = UserAdapter(this, this)
 
         viewBinding.mainRv.layoutManager = manager
         viewBinding.mainRv.adapter = userAdapter
     }
 
     private fun setupObservers(){
+        val isConnected = runBlocking { NetworkUtil.isInternetAvailable() }
 
-//        mainViewModel.userList.observe(this, Observer {
-//            it?.let { users ->
-//                if (users.isNotEmpty()){
-//                    mainViewModel.populateProfileData()
-//                }
-//            }
-//        })
-//
-//        mainViewModel.pictureList.observe(this, Observer {
-//            it?.let { pictures ->
-//                if (pictures.isNotEmpty()){
-//                    mainViewModel.populateProfileData()
-//                }
-//            }
-//        })
-//
-//        mainViewModel.postList.observe(this, Observer {
-//            it?.let { posts ->
-//                if (posts.isNotEmpty()){
-//                    mainViewModel.populateProfileData()
-//                }
-//            }
-//        })
+        mainViewModel.userList.observe(this, Observer {
+            it?.let { users ->
+                if (users.isEmpty() && !isConnected){
+                    noNetworkErrorDialog()
+                }
+            }
+        })
 
         mainViewModel.results.observe(this, Observer {
             if (it){
@@ -75,5 +76,26 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+    }
+
+    private fun noNetworkErrorDialog(){
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.network_error_title)
+        builder.setMessage(R.string.network_error_message)
+
+        builder.setPositiveButton(R.string.ok) { dialog, which ->
+
+        }
+        builder.show()
+
+    }
+
+    override fun onPictureClicked(picUrl: String) {
+        val imageView = ImageView(this)
+//        imageView.setImageURI(Uri.parse(picUrl))
+        val share_dialog = AlertDialog.Builder(this)
+        Glide.with(this).load(picUrl).into(imageView)
+        share_dialog.setView(imageView)
+        share_dialog.show()
     }
 }

@@ -9,14 +9,13 @@ import com.bumptech.glide.Glide
 import com.example.koombea_ig.data.network.response.ProfileData
 import com.example.koombea_ig.databinding.UserItemBinding
 
-class UserAdapter(private val context: Context) : RecyclerView.Adapter<UserAdapter.ViewHolder>() {
+class UserAdapter(private val context: Context, private val listener: PostAdapter.PictureItemListener) : RecyclerView.Adapter<UserAdapter.ViewHolder>() {
 
     private var profileList = mutableListOf<ProfileData>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = UserItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding)
-
+        return ViewHolder(binding, listener)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -33,7 +32,7 @@ class UserAdapter(private val context: Context) : RecyclerView.Adapter<UserAdapt
         return profileList.size
     }
 
-    class ViewHolder(val binding: UserItemBinding): RecyclerView.ViewHolder(binding.root){
+    class ViewHolder(val binding: UserItemBinding, private val listener: PostAdapter.PictureItemListener): RecyclerView.ViewHolder(binding.root){
 
         fun bindItem(profileData: ProfileData){
             binding.nameTv.text = profileData.name
@@ -44,7 +43,7 @@ class UserAdapter(private val context: Context) : RecyclerView.Adapter<UserAdapt
                 .into(binding.profilePicIv)
 
             val layoutManager = LinearLayoutManager(binding.postLayoutRv.context)
-            val postAdapter = PostAdapter(binding.postLayoutRv.context)
+            val postAdapter = PostAdapter(binding.postLayoutRv.context, listener)
             binding.postLayoutRv.layoutManager = layoutManager
             binding.postLayoutRv.adapter = postAdapter
             postAdapter.setItems(profileData.posts.toMutableList())

@@ -1,7 +1,9 @@
 package com.example.koombea_ig.adapter
 
 import android.content.Context
+import android.icu.lang.UCharacter
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.GridLayoutManager
@@ -13,7 +15,7 @@ import com.example.koombea_ig.data.network.response.ProfileData
 import com.example.koombea_ig.data.network.response.ProfilePost
 import com.example.koombea_ig.databinding.*
 
-class PostAdapter(private val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PostAdapter(private val context: Context, private val listener: PictureItemListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var postList = mutableListOf<ProfilePost>()
 
@@ -24,7 +26,7 @@ class PostAdapter(private val context: Context) : RecyclerView.Adapter<RecyclerV
             1 -> {
                 viewBinding =
                     PostItem1Binding.inflate(LayoutInflater.from(parent.context), parent, false)
-                return Item1ViewHolder(viewBinding)
+                return Item1ViewHolder(viewBinding, listener)
             }
             2 -> {
                 viewBinding =
@@ -48,6 +50,9 @@ class PostAdapter(private val context: Context) : RecyclerView.Adapter<RecyclerV
         val post = postList[position]
 
         when (getItemViewType(position)) {
+            0 -> {
+
+            }
             1 -> {
                 (holder as Item1ViewHolder).bindItem(post)
             }
@@ -72,6 +77,7 @@ class PostAdapter(private val context: Context) : RecyclerView.Adapter<RecyclerV
         val post = postList[position]
 
         return when (post.pictures.size) {
+            0 -> 0
             1 -> 1
             2 -> 2
             3 -> 3
@@ -83,15 +89,28 @@ class PostAdapter(private val context: Context) : RecyclerView.Adapter<RecyclerV
         return postList.size
     }
 
-    class Item1ViewHolder(private val binding: PostItem1Binding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class Item1ViewHolder(private val binding: PostItem1Binding, private val listener: PictureItemListener) :
+        RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+
+        private lateinit var post: ProfilePost
+
+        init {
+            binding.pic1Iv.setOnClickListener(this)
+        }
 
         fun bindItem(profilePost: ProfilePost) {
+            this.post = profilePost
             binding.dateTv.text = profilePost.date
             Glide.with(binding.root)
                 .load(profilePost.pictures[0])
                 .into(binding.pic1Iv)
 
+        }
+
+        override fun onClick(p0: View?) {
+            when(p0?.id){
+                binding.pic1Iv.id -> listener.onPictureClicked(this.post.pictures[0])
+            }
         }
     }
 
@@ -132,16 +151,23 @@ class PostAdapter(private val context: Context) : RecyclerView.Adapter<RecyclerV
         RecyclerView.ViewHolder(binding.root) {
 
         fun bindItem(profilePost: ProfilePost) {
+            val picturesLength = profilePost.pictures.size -1
             binding.dateTv.text = profilePost.date
             Glide.with(binding.root)
                 .load(profilePost.pictures[0])
                 .into(binding.pic1Iv)
 
-            val layoutManager = GridLayoutManager(binding.pictureGridRv.context,3)
+            val layoutManager = LinearLayoutManager(binding.pictureGridRv.context, LinearLayoutManager.HORIZONTAL, false)
             val pictureAdapter = PictureAdapter(binding.pictureGridRv.context)
             binding.pictureGridRv.layoutManager = layoutManager
             binding.pictureGridRv.adapter = pictureAdapter
-            pictureAdapter.setItems(profilePost.pictures.map { Picture(picUrl = it) }.toMutableList())
+
+            val pictures = profilePost.pictures.map { Picture(picUrl = it) }.takeLast(picturesLength)
+            pictureAdapter.setItems(pictures.toMutableList())
         }
+    }
+
+    interface PictureItemListener {
+        fun onPictureClicked(picUrl: String)
     }
 }
