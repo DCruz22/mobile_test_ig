@@ -31,17 +31,17 @@ class PostAdapter(private val context: Context, private val listener: PictureIte
             2 -> {
                 viewBinding =
                     PostItem2Binding.inflate(LayoutInflater.from(parent.context), parent, false)
-                return Item2ViewHolder(viewBinding)
+                return Item2ViewHolder(viewBinding, listener)
             }
             3 -> {
                 viewBinding =
                     PostItem3Binding.inflate(LayoutInflater.from(parent.context), parent, false)
-                return Item3ViewHolder(viewBinding)
+                return Item3ViewHolder(viewBinding, listener)
             }
             else -> {
                 viewBinding =
                     PostItem4Binding.inflate(LayoutInflater.from(parent.context), parent, false)
-                return Item4ViewHolder(viewBinding)
+                return Item4ViewHolder(viewBinding, listener)
             }
         }
     }
@@ -108,16 +108,24 @@ class PostAdapter(private val context: Context, private val listener: PictureIte
         }
 
         override fun onClick(p0: View?) {
-            when(p0?.id){
-                binding.pic1Iv.id -> listener.onPictureClicked(this.post.pictures[0])
+            if(p0?.id != binding.dateTv.id){
+                listener.onPictureClicked(this.post.pictures[0])
             }
         }
     }
 
-    class Item2ViewHolder(private val binding: PostItem2Binding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class Item2ViewHolder(private val binding: PostItem2Binding, private val listener: PictureItemListener) :
+        RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+
+        private lateinit var post: ProfilePost
+
+        init {
+            binding.pic1Iv.setOnClickListener(this)
+            binding.pic2Iv.setOnClickListener(this)
+        }
 
         fun bindItem(profilePost: ProfilePost) {
+            this.post = profilePost
             binding.dateTv.text = profilePost.date
             Glide.with(binding.root)
                 .load(profilePost.pictures[0])
@@ -125,14 +133,28 @@ class PostAdapter(private val context: Context, private val listener: PictureIte
             Glide.with(binding.root)
                 .load(profilePost.pictures[1])
                 .into(binding.pic2Iv)
+        }
 
+        override fun onClick(p0: View?) {
+            when(p0?.id){
+                binding.pic1Iv.id -> listener.onPictureClicked(this.post.pictures[0])
+                binding.pic2Iv.id -> listener.onPictureClicked(this.post.pictures[1])
+            }
         }
     }
 
-    class Item3ViewHolder(private val binding: PostItem3Binding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class Item3ViewHolder(private val binding: PostItem3Binding, private val listener: PictureItemListener) :
+        RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+        private lateinit var post: ProfilePost
+
+        init {
+            binding.pic1Iv.setOnClickListener(this)
+            binding.pic2Iv.setOnClickListener(this)
+            binding.pic3Iv.setOnClickListener(this)
+        }
 
         fun bindItem(profilePost: ProfilePost) {
+            this.post = profilePost
             binding.dateTv.text = profilePost.date
             Glide.with(binding.root)
                 .load(profilePost.pictures[0])
@@ -143,14 +165,27 @@ class PostAdapter(private val context: Context, private val listener: PictureIte
             Glide.with(binding.root)
                 .load(profilePost.pictures[2])
                 .into(binding.pic3Iv)
+        }
 
+        override fun onClick(p0: View?) {
+            when(p0?.id){
+                binding.pic1Iv.id -> listener.onPictureClicked(this.post.pictures[0])
+                binding.pic2Iv.id -> listener.onPictureClicked(this.post.pictures[1])
+                binding.pic3Iv.id -> listener.onPictureClicked(this.post.pictures[2])
+            }
         }
     }
 
-    class Item4ViewHolder(private val binding: PostItem4Binding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class Item4ViewHolder(private val binding: PostItem4Binding, private val listener: PictureItemListener) :
+        RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+        private lateinit var post: ProfilePost
+
+        init {
+            binding.pic1Iv.setOnClickListener(this)
+        }
 
         fun bindItem(profilePost: ProfilePost) {
+            this.post = profilePost
             val picturesLength = profilePost.pictures.size -1
             binding.dateTv.text = profilePost.date
             Glide.with(binding.root)
@@ -158,12 +193,18 @@ class PostAdapter(private val context: Context, private val listener: PictureIte
                 .into(binding.pic1Iv)
 
             val layoutManager = LinearLayoutManager(binding.pictureGridRv.context, LinearLayoutManager.HORIZONTAL, false)
-            val pictureAdapter = PictureAdapter(binding.pictureGridRv.context)
+            val pictureAdapter = PictureAdapter(binding.pictureGridRv.context, listener)
             binding.pictureGridRv.layoutManager = layoutManager
             binding.pictureGridRv.adapter = pictureAdapter
 
             val pictures = profilePost.pictures.map { Picture(picUrl = it) }.takeLast(picturesLength)
             pictureAdapter.setItems(pictures.toMutableList())
+        }
+
+        override fun onClick(p0: View?) {
+            when(p0?.id){
+                binding.pic1Iv.id -> listener.onPictureClicked(this.post.pictures[0])
+            }
         }
     }
 

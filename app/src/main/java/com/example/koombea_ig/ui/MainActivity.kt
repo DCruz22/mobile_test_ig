@@ -4,7 +4,6 @@ import android.content.DialogInterface
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.TextUtils
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
@@ -20,6 +19,9 @@ import com.bumptech.glide.Glide
 import com.example.koombea_ig.utils.NetworkUtil
 import com.example.koombea_ig.worker.WorkerController
 import kotlinx.coroutines.runBlocking
+
+import android.view.LayoutInflater
+import com.example.koombea_ig.databinding.AlertImageBinding
 
 
 class MainActivity : AppCompatActivity(), PostAdapter.PictureItemListener {
@@ -91,11 +93,14 @@ class MainActivity : AppCompatActivity(), PostAdapter.PictureItemListener {
     }
 
     override fun onPictureClicked(picUrl: String) {
-        val imageView = ImageView(this)
-//        imageView.setImageURI(Uri.parse(picUrl))
-        val share_dialog = AlertDialog.Builder(this)
-        Glide.with(this).load(picUrl).into(imageView)
-        share_dialog.setView(imageView)
-        share_dialog.show()
+        val alertDialog = AlertDialog.Builder(this)
+        val view = AlertImageBinding.inflate(LayoutInflater.from(this))
+        Glide.with(this).load(picUrl).into(view.dialogImageView)
+        alertDialog.setView(view.root)
+        alertDialog.setNeutralButton(
+            R.string.ok
+        ) { dlg, sumthin -> }
+
+        alertDialog.show()
     }
 }
