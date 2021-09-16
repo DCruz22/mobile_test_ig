@@ -25,7 +25,6 @@ android {
         }
 
         debug {
-            applicationIdSuffix ".debug"
             buildConfigField('String', "BASE_URL", "\"$base_url\"")
         }
 
@@ -36,6 +35,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    dataBinding{
+        enabled = true
     }
 }
 

@@ -1,13 +1,14 @@
 package com.example.koombea_ig.data.network.response
 
 import com.example.koombea_ig.data.models.User
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 
 data class ProfileData(
-    @SerializedName("uid")
+    @field:Json(name = "uid")
     val id: String = "",
     var name: String = "",
     var email: String = "",
+    @field:Json(name = "profile_pic")
     var profilePic: String = "",
     var posts: List<ProfilePost> = emptyList()
 ) {

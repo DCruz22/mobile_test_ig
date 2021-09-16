@@ -1,23 +1,25 @@
 package com.example.koombea_ig.adapter
 
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.koombea_ig.data.models.User
+import com.example.koombea_ig.databinding.UserItemBinding
 
 class UserAdapter() : RecyclerView.Adapter<UserAdapter.ViewHolder>() {
 
     private var userList = mutableListOf<User>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-//        val binding = UserItemBinding
-//        return ViewHolder()
-        TODO("Not yet implemented")
+        val binding = UserItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
 
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        TODO("Not yet implemented")
+        val user = userList[position]
+        holder.bindItem(user)
     }
 
     fun setItems(items: MutableList<User>) {
@@ -29,7 +31,16 @@ class UserAdapter() : RecyclerView.Adapter<UserAdapter.ViewHolder>() {
         return userList.size
     }
 
-    class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
+    class ViewHolder(private val binding: UserItemBinding): RecyclerView.ViewHolder(binding.root){
 
+        fun bindItem(user: User){
+            binding.nameTv.text = user.name
+            binding.emailTv.text = user.email
+            Glide.with(binding.root)
+                .load(user.profilePic)
+                .circleCrop()
+                .into(binding.profilePicIv)
+
+        }
     }
 }

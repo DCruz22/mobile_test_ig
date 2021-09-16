@@ -8,13 +8,14 @@ import com.example.koombea_ig.data.repository.IRemoteRepository
 import com.example.koombea_ig.data.repository.picture.IPictureLocalRepository
 import com.example.koombea_ig.data.repository.post.IPostLocalRepository
 import com.example.koombea_ig.data.repository.user.IUserLocalRepository
+import com.example.koombea_ig.worker.WorkerController
 
 class MainViewModel(
     private val applicationContext: Context,
     private val userLocalRepository: IUserLocalRepository,
     private val postLocalRepository: IPostLocalRepository,
     private val pictureLocalRepository: IPictureLocalRepository,
-    private val iRemoteRepository: IRemoteRepository
+    private val remoteRepository: IRemoteRepository
 ) : ViewModel() {
 
     private val TAG = MainViewModel::class.java.name
