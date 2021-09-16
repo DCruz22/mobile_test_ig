@@ -14,6 +14,7 @@ buildscript {
     ext.gson_version = '2.8.6'
     ext.base_url = "https://mock.koombea.io/mt/"
     ext.coroutines_version = '1.3.0'
+    ext.androidx_arch_test_version = "2.1.0"
 
     repositories {
         google()

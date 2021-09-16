@@ -89,6 +89,18 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
     testImplementation 'junit:junit:4.+'
+    testImplementation "androidx.test:runner:1.4.0"
+    testImplementation "androidx.test:core:1.4.0"
+    testImplementation "androidx.test.ext:junit:1.1.3"
+    testImplementation "androidx.test:rules:1.4.0"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.7"
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    //Room Unit Testing
+    testImplementation "androidx.room:room-testing:$room_version"
+    testImplementation "androidx.arch.core:core-testing:$arch_version"
+
+    // Architecture components testing
+    androidTestImplementation "androidx.arch.core:core-testing:$androidx_arch_test_version"
 }
